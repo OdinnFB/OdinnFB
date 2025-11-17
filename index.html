@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Odinn's website!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+#bg-video {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* center the element */
+  transform: translate(-50%, -50%) rotate(90deg) scale(0.9);
+  transform-origin: center center;
+  /* ensure it fills the viewport after rotation */
+  min-width: 100vh;
+  min-height: 100vw;
+  width: auto;
+  height: auto;
+  z-index: -1;
+  opacity: 0.18;
+  object-fit: cover;
+}
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 1.5rem;
+}
+</style>
+</head>
+<body>
+<video id="bg-video" autoplay muted loop playsinline preload="auto">
+  <source src="stop-motion2.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+<div class="content">
+<h1>Hello!</h1>
+<p>This is the motivational message of hope and future success!</p>
+
+<p>This bit has a link in it:
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+And this bit is after a break.
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>This bit is in italics!</em></p>
+</div>
+</body>
+</html>
