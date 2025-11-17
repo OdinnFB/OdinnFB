@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Odinn's website!</title>
+<title>E-waste Archaeology</title>
 <style>
 html { color-scheme: light dark; }
-body { width: 35em; margin: 0 auto;
+body { max-width: 50em; margin: 0 auto; padding: 0 1rem;
 font-family: Tahoma, Verdana, Arial, sans-serif; }
 #bg-video {
   position: fixed;
@@ -25,25 +25,89 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 .content {
   position: relative;
   z-index: 1;
-  padding: 1.5rem;
+  max-width: 100rem;
+  margin: 0 auto;
+  padding: 2rem 1.2rem;
+}
+/* Double the size of top text */
+.content h1 {
+  font-size: 3.2rem;
+}
+.content em {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 1.5rem;
+}
+/* gallery at page bottom */
+.gallery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.7rem; /* 80% of 3.375rem */
+  max-width: 80rem;
+  margin: 3.2rem auto 6rem;
+  padding: 0 2.4rem;
+}
+.gallery-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1.8rem; /* 80% of 2.25rem */
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+}
+.gallery-row img:first-child {
+  height: auto;
+  width: auto;
+  max-height: 504px; /* 80% of 630px */
+  object-fit: contain;
+  border-radius: 9.6px;
+  box-shadow: 0 9.6px 28.8px rgba(0,0,0,0.18);
+}
+.gallery-row img:last-child {
+  height: auto;
+  width: auto;
+  max-height: 504px;
+  object-fit: contain;
+  border-radius: 9.6px;
+  box-shadow: 0 9.6px 28.8px rgba(0,0,0,0.18);
+  align-self: stretch;
+  display: flex;
+}
+.gallery img:not(.gallery-row img) {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 9.6px;
+  box-shadow: 0 9.6px 28.8px rgba(0,0,0,0.18);
+  max-height: 504px;
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>
 </head>
 <body>
 <video id="bg-video" autoplay muted loop playsinline preload="auto">
   <source src="stop-motion2.mp4" type="video/mp4">
-  Your browser does not support the video tag.
 </video>
 <div class="content">
-<h1>Hello!</h1>
-<p>This is the motivational message of hope and future success!</p>
+<h1>The Archaeology of a Laptop</h1>
+<p><em>An exploration into e-waste: uncovering consumption, process, and policy</em></p>
 
-<p>This bit has a link in it:
-<a href="http://nginx.org/">nginx.org</a>.<br/>
-And this bit is after a break.
-<a href="http://nginx.com/">nginx.com</a>.</p>
-
-<p><em>This bit is in italics!</em></p>
 </div>
+<!-- Gallery: images you can scroll down to see -->
+<div style="height: 504px;"></div>
+<section class="gallery" aria-label="Additional images">
+  <div class="gallery-row">
+    <img src="ewaste_graphics/COVER3.png" alt="Cover image">
+    <img src="ewaste_graphics/components_x-ray.png" alt="Components X-ray">
+  </div>
+  <div class="gallery-row">
+    <img src="ewaste_graphics/silvery.png" alt="Silvery illustration">
+    <img src="ewaste_graphics/METROPOLIS1_high.res.png" alt="Metropolis artwork">
+  </div>
+  <img src="ewaste_graphics/HiddenLanguageOfQRCodes_high.res3.png" alt="Hidden language of QR codes">
+</section>
 </body>
 </html>
