@@ -1,34 +1,11 @@
 from flask import Flask, request, jsonify, send_file
-import json
-import os
 from datetime import datetime
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 
-# Store messages.json next to this script to avoid working-dir issues
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MESSAGES_FILE = os.path.join(BASE_DIR, 'messages.json')
-
-def load_messages():
-    """Load messages from file."""
-    if os.path.exists(MESSAGES_FILE):
-        try:
-            with open(MESSAGES_FILE, 'r') as f:
-                data = json.load(f)
-                return data.get('messages', [])
-        except:
-            return []
-    return []
-
-def save_messages(messages):
-    """Save messages to file."""
-    try:
-        with open(MESSAGES_FILE, 'w') as f:
-            json.dump({'messages': messages}, f)
-        return True
-    except Exception as e:
-        print(f"Error saving messages to {MESSAGES_FILE}: {e}")
-        return False
+# In-memory storage for messages
+# This list will be cleared when the server restarts
+MESSAGES = []
 
 @app.route('/')
 def serve_index():
@@ -56,34 +33,30 @@ def set_track():
 @app.route('/get_messages', methods=['GET'])
 def get_messages():
     """Retrieve all stored messages."""
-    messages = load_messages()
-    return jsonify({'messages': messages})
+    return jsonify({'messages': MESSAGES})
 
 @app.route('/add_message', methods=['POST'])
 def add_message():
-    """Add a new message and store it."""
+    """Add a new message and store it in memory."""
     data = request.json
     text = data.get('text', '').strip()
     
     if not text or len(text) > 100:
         return jsonify({'status': 'error', 'message': 'Invalid message'}), 400
     
-    messages = load_messages()
     msg = {
         'text': text,
         'timestamp': datetime.now().isoformat()
     }
-    messages.append(msg)
-    ok = save_messages(messages)
-    if not ok:
-        return jsonify({'status': 'error', 'message': 'Failed to save message on server'}), 500
+    MESSAGES.append(msg)
     
-    return jsonify({'status': 'ok', 'message': msg, 'message_count': len(messages)})
+    return jsonify({'status': 'ok', 'message': msg, 'message_count': len(MESSAGES)})
 
 @app.route('/clear_messages', methods=['POST'])
 def clear_messages():
     """Clear all messages (optional admin endpoint)."""
-    save_messages([])
+    global MESSAGES
+    MESSAGES = []
     return jsonify({'status': 'ok'})
 
 if __name__ == '__main__':
