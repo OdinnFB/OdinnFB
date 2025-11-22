@@ -5,7 +5,9 @@ from datetime import datetime
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 
-MESSAGES_FILE = 'messages.json'
+# Store messages.json next to this script to avoid working-dir issues
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MESSAGES_FILE = os.path.join(BASE_DIR, 'messages.json')
 
 def load_messages():
     """Load messages from file."""
@@ -20,8 +22,13 @@ def load_messages():
 
 def save_messages(messages):
     """Save messages to file."""
-    with open(MESSAGES_FILE, 'w') as f:
-        json.dump({'messages': messages}, f)
+    try:
+        with open(MESSAGES_FILE, 'w') as f:
+            json.dump({'messages': messages}, f)
+        return True
+    except Exception as e:
+        print(f"Error saving messages to {MESSAGES_FILE}: {e}")
+        return False
 
 @app.route('/')
 def serve_index():
@@ -67,7 +74,9 @@ def add_message():
         'timestamp': datetime.now().isoformat()
     }
     messages.append(msg)
-    save_messages(messages)
+    ok = save_messages(messages)
+    if not ok:
+        return jsonify({'status': 'error', 'message': 'Failed to save message on server'}), 500
     
     return jsonify({'status': 'ok', 'message': msg, 'message_count': len(messages)})
 
