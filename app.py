@@ -62,13 +62,14 @@ def add_message():
         return jsonify({'status': 'error', 'message': 'Invalid message'}), 400
     
     messages = load_messages()
-    messages.append({
+    msg = {
         'text': text,
         'timestamp': datetime.now().isoformat()
-    })
+    }
+    messages.append(msg)
     save_messages(messages)
     
-    return jsonify({'status': 'ok', 'message_count': len(messages)})
+    return jsonify({'status': 'ok', 'message': msg, 'message_count': len(messages)})
 
 @app.route('/clear_messages', methods=['POST'])
 def clear_messages():

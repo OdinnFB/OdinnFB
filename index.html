@@ -253,15 +253,43 @@
       });
     });
 
-    function addMessage(text) {
-      const msg = new FloatingMessage(text);
-      messages.push(msg);
-      // Send to server
-      fetch("/add_message", {
+    // message sync helpers
+    const seenKeys = new Set(); // prevent duplicates across polling
+
+    function makeKey(msg) {
+      // msg: {text, timestamp}
+      return (msg.timestamp || '') + '||' + (msg.text || '');
+    }
+
+    function addMessageLocal(msg) {
+      // Accept either string or object {text, timestamp}
+      let mObj = null;
+      if (typeof msg === 'string') {
+        mObj = { text: msg, timestamp: new Date().toISOString() };
+      } else {
+        mObj = msg;
+      }
+      const key = makeKey(mObj);
+      if (seenKeys.has(key)) return;
+      seenKeys.add(key);
+
+      const fm = new FloatingMessage(mObj.text);
+      messages.push(fm);
+    }
+
+    function postMessageToServer(text) {
+      return fetch("/add_message", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({text})
-      });
+      })
+      .then(r => r.json())
+      .then(resp => {
+        if (resp && resp.status === 'ok' && resp.message) {
+          addMessageLocal(resp.message);
+        }
+      })
+      .catch(err => console.error('Failed to post message:', err));
     }
 
     function loadMessages() {
@@ -269,20 +297,25 @@
         .then(r => r.json())
         .then(data => {
           if (data.messages && Array.isArray(data.messages)) {
-            data.messages.forEach(msg => addMessage(msg));
+            data.messages.forEach(msg => addMessageLocal(msg));
           }
         })
         .catch(err => console.error("Failed to load messages:", err));
     }
 
+    // animate loop
     function animate() {
       messages.forEach(m => m.update());
       requestAnimationFrame(animate);
     }
     animate();
 
-    // Load existing messages on page load
-    window.addEventListener('load', loadMessages);
+    // initial load and polling to keep clients in sync
+    window.addEventListener('load', () => {
+      loadMessages();
+      // poll for new messages every 3s
+      setInterval(loadMessages, 3000);
+    });
 
     // Brightness control
     document.getElementById("brightness").oninput = function() {
@@ -311,7 +344,7 @@
     function sendMessage() {
       const text = messageInput.value.trim();
       if (text.length > 0) {
-        addMessage(text);
+        postMessageToServer(text);
         messageInput.value = '';
         messageInput.focus();
       }
