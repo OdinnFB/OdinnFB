@@ -200,11 +200,29 @@
 
       .message-section {
         flex-direction: column;
+        align-items: stretch;
+      }
+
+      .input-group {
+        width: 100%;
       }
 
       #messageInput {
-        min-width: 100%;
+        min-width: 0;
       }
+    }
+
+    .message-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 8px;
+      width: 100%;
     }
   </style>
 </head>
@@ -236,9 +254,9 @@
     </div>
 
     <div class="message-section">
-      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+      <div class="message-container">
         <label for="messageInput">Leave a message:</label>
-        <div style="display: flex; gap: 8px;">
+        <div class="input-group">
           <input type="text" id="messageInput" placeholder="Type your message..." maxlength="100">
           <button id="sendMessageBtn">Send</button>
         </div>
