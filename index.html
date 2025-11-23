@@ -1,17 +1,90 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Control Panel</title>
   <style>
-    :root { --btn-height: 64px; --gap: 10px; }
-    * { box-sizing: border-box; }
-    html { overflow: hidden; }
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding: 16px; margin: 0; background: #2b2b2b; color: #eef6fb; width: 100%; height: 100vh; overflow: hidden; position: relative; }
-    .controls { max-width: 1000px; margin: 12px auto; position: relative; z-index: 2; }
-    h1 { margin: 0 0 12px 0; font-size: 1.4rem; }
-    label { display: block; margin-bottom: 8px; font-weight: 600; }
-    #brightness, #volume { width: 100%; margin-bottom: 12px; }
+    :root {
+      --btn-height: 64px;
+      --gap: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      overflow: hidden;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      padding: 16px;
+      margin: 0;
+      background: #2b2b2b;
+      color: #eef6fb;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .background-messages {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .message-bubble {
+      position: absolute;
+      background: rgba(167, 232, 255, 0.15);
+      border: 2px solid rgba(167, 232, 255, 0.4);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #a7e8ff;
+      font-size: 13px;
+      font-weight: 500;
+      max-width: 180px;
+      word-wrap: break-word;
+      white-space: normal;
+      box-shadow: 0 0 8px rgba(103, 207, 255, 0.2);
+      pointer-events: auto;
+      cursor: grab;
+    }
+
+    .message-bubble:active {
+      cursor: grabbing;
+    }
+
+    .controls {
+      max-width: 1000px;
+      margin: 12px auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    h1 {
+      margin: 0 0 12px 0;
+      font-size: 1.4rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    #brightness,
+    #volume {
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
     .now-playing {
       background: rgba(167, 232, 255, 0.1);
       border-left: 3px solid #a7e8ff;
@@ -22,6 +95,7 @@
       color: #a7e8ff;
       font-weight: 500;
     }
+
     .track-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -29,11 +103,12 @@
       gap: var(--gap);
       margin-top: 8px;
     }
+
     .track-grid button {
       width: 100%;
       height: 100%;
       border: none;
-      background: linear-gradient(180deg,#a7e8ff,#67cfff);
+      background: linear-gradient(180deg, #a7e8ff, #67cfff);
       color: #022b3a;
       font-size: 15px;
       font-weight: 600;
@@ -41,21 +116,101 @@
       cursor: pointer;
       padding: 8px 10px;
       text-align: center;
-      box-shadow: 0 2px 0 rgba(0,0,0,0.06) inset;
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.06) inset;
     }
-    .track-grid button:hover { filter: brightness(0.98); }
-    .track-grid button:active { transform: translateY(1px); }
-    .track-grid button:focus { outline: 3px solid rgba(167,232,255,0.32); }
+
+    .track-grid button:hover {
+      filter: brightness(0.98);
+    }
+
+    .track-grid button:active {
+      transform: translateY(1px);
+    }
+
+    .track-grid button:focus {
+      outline: 3px solid rgba(167, 232, 255, 0.32);
+    }
+
+    .message-section {
+      margin-top: 20px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .message-section label {
+      margin: 0;
+    }
+
+    #messageInput {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 12px;
+      border: 2px solid rgba(167, 232, 255, 0.3);
+      border-radius: 6px;
+      background: rgba(167, 232, 255, 0.08);
+      color: #eef6fb;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    #messageInput::placeholder {
+      color: rgba(238, 246, 251, 0.5);
+    }
+
+    #messageInput:focus {
+      outline: none;
+      border-color: #a7e8ff;
+      background: rgba(167, 232, 255, 0.12);
+    }
+
+    #sendMessageBtn {
+      padding: 10px 20px;
+      background: linear-gradient(180deg, #a7e8ff, #67cfff);
+      color: #022b3a;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    #sendMessageBtn:hover {
+      filter: brightness(0.98);
+    }
+
+    #sendMessageBtn:active {
+      transform: translateY(1px);
+    }
+
     @media (max-width: 900px) {
-      .track-grid { grid-template-columns: repeat(4, 1fr); }
+      .track-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
+
     @media (max-width: 640px) {
+
       /* Mobile: 2 columns x 5 rows for 10 buttons */
-      .track-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 56px; }
+      .track-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: 56px;
+      }
+
+      .message-section {
+        flex-direction: column;
+      }
+
+      #messageInput {
+        min-width: 100%;
+      }
     }
   </style>
 </head>
+
 <body>
+  <div class="background-messages" id="backgroundMessages"></div>
   <div class="controls">
     <h1>Control Panel</h1>
 
@@ -79,9 +234,158 @@
       <button role="listitem" onclick="setTrack('PiAudio/Take Five.mp3')">Take Five</button>
       <button role="listitem" onclick="setTrack('PiAudio/Virgo.mp3')">Virgo</button>
     </div>
+
+    <div class="message-section">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+        <label for="messageInput">Leave a message:</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="messageInput" placeholder="Type your message..." maxlength="100">
+          <button id="sendMessageBtn">Send</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
+    // Floating messages system
+    const messages = [];
+    const messageContainer = document.getElementById('backgroundMessages');
+    const MIN_SPEED = 0.3;
+    const MAX_SPEED = 0.8;
+
+    class FloatingMessage {
+      constructor(text) {
+        this.text = text;
+        this.x = Math.random() * (window.innerWidth - 200);
+        this.y = Math.random() * (window.innerHeight - 100);
+        this.vx = (Math.random() - 0.5) * (MAX_SPEED - MIN_SPEED) + (Math.random() > 0.5 ? MIN_SPEED : -MIN_SPEED);
+        this.vy = (Math.random() - 0.5) * (MAX_SPEED - MIN_SPEED) + (Math.random() > 0.5 ? MIN_SPEED : -MIN_SPEED);
+        this.originalVx = this.vx;
+        this.originalVy = this.vy;
+        this.el = document.createElement('div');
+        this.el.className = 'message-bubble';
+        this.el.textContent = text;
+        this.el.style.left = this.x + 'px';
+        this.el.style.top = this.y + 'px';
+        messageContainer.appendChild(this.el);
+        this.isDragging = false;
+        this.dragOffsetX = 0;
+        this.dragOffsetY = 0;
+        this.setupDrag();
+      }
+
+      setupDrag() {
+        this.el.addEventListener('mousedown', (e) => {
+          this.isDragging = true;
+          this.dragOffsetX = e.clientX - this.x;
+          this.dragOffsetY = e.clientY - this.y;
+          this.originalVx = this.vx;
+          this.originalVy = this.vy;
+          this.vx = 0;
+          this.vy = 0;
+        });
+      }
+
+      update() {
+        if (this.isDragging) {
+          const mouseEvent = window.lastMouseEvent;
+          if (mouseEvent) {
+            this.x = mouseEvent.clientX - this.dragOffsetX;
+            this.y = mouseEvent.clientY - this.dragOffsetY;
+          }
+          return;
+        }
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        const bubble = this.el;
+        const w = bubble.offsetWidth;
+        const h = bubble.offsetHeight;
+        if (this.x + w > window.innerWidth) { this.x = window.innerWidth - w; this.vx *= -1; }
+        if (this.x < 0) { this.x = 0; this.vx *= -1; }
+        if (this.y + h > window.innerHeight) { this.y = window.innerHeight - h; this.vy *= -1; }
+        if (this.y < 0) { this.y = 0; this.vy *= -1; }
+
+        this.el.style.left = this.x + 'px';
+        this.el.style.top = this.y + 'px';
+      }
+
+      remove() {
+        this.el.remove();
+      }
+    }
+
+    // Track drag globally
+    document.addEventListener('mousemove', (e) => {
+      window.lastMouseEvent = e;
+    });
+    document.addEventListener('mouseup', () => {
+      messages.forEach(m => {
+        if (m.isDragging) {
+          m.isDragging = false;
+          m.vx = m.originalVx;
+          m.vy = m.originalVy;
+        }
+      });
+    });
+
+    // Message sync helpers
+    const seenKeys = new Set();
+
+    function makeKey(msg) {
+      return (msg.timestamp || '') + '||' + (msg.text || '');
+    }
+
+    function addMessageLocal(msg) {
+      let mObj = typeof msg === 'string' ? { text: msg, timestamp: new Date().toISOString() } : msg;
+      const key = makeKey(mObj);
+      if (seenKeys.has(key)) return;
+      seenKeys.add(key);
+
+      const fm = new FloatingMessage(mObj.text);
+      messages.push(fm);
+    }
+
+    function postMessageToServer(text) {
+      return fetch("/add_message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      })
+        .then(r => r.json())
+        .then(resp => {
+          if (resp && resp.status === 'ok' && resp.message) {
+            addMessageLocal(resp.message);
+          }
+        })
+        .catch(err => console.error('Failed to post message:', err));
+    }
+
+    function loadMessages() {
+      fetch("/get_messages")
+        .then(r => r.json())
+        .then(data => {
+          if (data.messages && Array.isArray(data.messages)) {
+            data.messages.forEach(msg => addMessageLocal(msg));
+          }
+        })
+        .catch(err => console.error("Failed to load messages:", err));
+    }
+
+    // Animate loop
+    function animate() {
+      messages.forEach(m => m.update());
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Initial load and polling
+    window.addEventListener('load', () => {
+      loadMessages();
+      setInterval(loadMessages, 3000);
+    });
+
     // Track display
     let currentTrack = 'None';
     const trackNameMap = {
@@ -98,20 +402,20 @@
     };
 
     // Brightness control
-    document.getElementById("brightness").oninput = function() {
+    document.getElementById("brightness").oninput = function () {
       fetch("/set_brightness", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({value: this.value})
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: this.value })
       });
     };
 
     // Volume control
-    document.getElementById("volume").oninput = function() {
+    document.getElementById("volume").oninput = function () {
       fetch("/set_volume", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({value: this.value})
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: this.value })
       });
     };
 
@@ -121,10 +425,29 @@
       document.getElementById('nowPlayingText').textContent = currentTrack;
       fetch("/set_track", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({track})
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ track })
       });
     }
+
+    // Message input handling
+    const messageInput = document.getElementById('messageInput');
+    const sendMessageBtn = document.getElementById('sendMessageBtn');
+
+    function sendMessage() {
+      const text = messageInput.value.trim();
+      if (text.length > 0) {
+        postMessageToServer(text);
+        messageInput.value = '';
+        messageInput.focus();
+      }
+    }
+
+    sendMessageBtn.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
   </script>
 </body>
+
 </html>

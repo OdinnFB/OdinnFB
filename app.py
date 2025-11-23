@@ -1,11 +1,43 @@
 from flask import Flask, request, jsonify, send_file
+import json
+import os
+from datetime import datetime
 
 app = Flask(__name__, static_folder='.', static_url_path='')
+
+# Store messages.json next to this script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MESSAGES_FILE = os.path.join(BASE_DIR, 'messages.json')
+
+def load_messages():
+    """Load messages from file."""
+    if os.path.exists(MESSAGES_FILE):
+        try:
+            with open(MESSAGES_FILE, 'r') as f:
+                data = json.load(f)
+                return data.get('messages', [])
+        except:
+            return []
+    return []
+
+def save_messages(messages):
+    """Save messages to file."""
+    try:
+        with open(MESSAGES_FILE, 'w') as f:
+            json.dump({'messages': messages}, f)
+        return True
+    except Exception as e:
+        print(f"Error saving messages: {e}")
+        return False
 
 @app.route('/')
 def serve_index():
     """Serve the main HTML page."""
-    return send_file('index.html')
+    response = send_file('index.html')
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 @app.route('/set_brightness', methods=['POST'])
 def set_brightness():
