@@ -1,11 +1,6 @@
 from flask import Flask, request, jsonify, send_file
-from datetime import datetime
 
 app = Flask(__name__, static_folder='.', static_url_path='')
-
-# In-memory storage for messages
-# This list will be cleared when the server restarts
-MESSAGES = []
 
 @app.route('/')
 def serve_index():
@@ -28,35 +23,6 @@ def set_track():
     track = data.get('track')
     print(f"Track set to: {track}")
     # TODO: Add your audio playback control here
-    return jsonify({'status': 'ok'})
-
-@app.route('/get_messages', methods=['GET'])
-def get_messages():
-    """Retrieve all stored messages."""
-    return jsonify({'messages': MESSAGES})
-
-@app.route('/add_message', methods=['POST'])
-def add_message():
-    """Add a new message and store it in memory."""
-    data = request.json
-    text = data.get('text', '').strip()
-    
-    if not text or len(text) > 100:
-        return jsonify({'status': 'error', 'message': 'Invalid message'}), 400
-    
-    msg = {
-        'text': text,
-        'timestamp': datetime.now().isoformat()
-    }
-    MESSAGES.append(msg)
-    
-    return jsonify({'status': 'ok', 'message': msg, 'message_count': len(MESSAGES)})
-
-@app.route('/clear_messages', methods=['POST'])
-def clear_messages():
-    """Clear all messages (optional admin endpoint)."""
-    global MESSAGES
-    MESSAGES = []
     return jsonify({'status': 'ok'})
 
 if __name__ == '__main__':
