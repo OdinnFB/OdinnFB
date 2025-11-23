@@ -16,6 +16,15 @@ def set_brightness():
     # TODO: Add your GPIO/hardware control here
     return jsonify({'status': 'ok'})
 
+@app.route('/set_volume', methods=['POST'])
+def set_volume():
+    """Handle volume control."""
+    data = request.json
+    volume = data.get('value')
+    print(f"Volume set to: {volume}")
+    # TODO: Add your audio volume control here
+    return jsonify({'status': 'ok'})
+
 @app.route('/set_track', methods=['POST'])
 def set_track():
     """Handle track selection."""
